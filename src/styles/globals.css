@@ -1,12 +1,74 @@
-:root{--accent:#0366d6}
-body{font-family:Inter,Segoe UI,Arial,Helvetica,sans-serif;margin:0}
-button{padding:6px 8px;background:#f3f4f6;border:1px solid #ddd;border-radius:4px}
-button:focus{outline:3px solid rgba(3,102,214,0.2);outline-offset:2px}
-textarea{font-family:inherit}
+:root{
+	--accent: #0366d6;
+	--muted: #6b7280;
+	--bg: #f7fafc;
+	--card: #ffffff;
+	--danger: #dc2626;
+}
 
-/* modal utilities */
+/* Base layout */
+html,body{height:100%}
+body{
+	font-family: Inter, 'Segoe UI', Arial, Helvetica, sans-serif;
+	margin:0;
+	background:var(--bg);
+	color: #111827;
+	-webkit-font-smoothing:antialiased;
+	-moz-osx-font-smoothing:grayscale;
+}
+
+/* App chrome */
+header{
+	background:var(--card);
+	box-shadow:0 1px 0 rgba(15,23,42,0.04);
+	padding:12px 20px;
+}
+header nav{display:flex;gap:12px;align-items:center}
+header a{color:var(--muted);text-decoration:none;font-weight:600}
+header a:hover{color:var(--accent)}
+
+main{padding:20px;max-width:1100px;margin:0 auto}
+h1{margin:0 0 12px 0;font-size:20px}
+
+/* Buttons */
+button{padding:6px 10px;background:#fff;border:1px solid #e6e7ea;border-radius:6px;cursor:pointer;transition:all .12s ease}
+button:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(2,6,23,0.04)}
+button:focus{outline:3px solid rgba(3,102,214,0.12);outline-offset:2px}
+button[disabled]{opacity:.6;cursor:not-allowed;transform:none}
+
+textarea{font-family:inherit;border:1px solid #e6e7ea;border-radius:6px}
+
+/* Collapsible */
+.collapsible{border:1px solid rgba(15,23,42,0.06);border-radius:8px;background:var(--card);overflow:hidden;margin-bottom:8px}
+.collapsible > .collapsible-header{background:transparent;padding:10px 12px;cursor:pointer;font-weight:600;color:#111827}
+.collapsible > .collapsible-content{padding:8px}
+
+/* Week grid cells (role=button used for cells) */
+[role="button"]{border:1px dashed rgba(15,23,42,0.06);min-height:36px;padding:6px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:transparent;transition:background .12s,box-shadow .12s}
+[role="button"]:hover{background:rgba(2,6,23,0.02)}
+[role="button"]:focus{box-shadow:0 0 0 4px rgba(3,102,214,0.08);outline:none}
+[role="button"] > div{font-size:16px}
+
+/* icons */
+[role="button"] > div[aria-hidden]{display:inline-flex;align-items:center;justify-content:center}
+[role="button"] > div[aria-hidden] svg, [role="button"] > div[aria-hidden]{transition:transform .12s}
+[role="button"] > div[aria-hidden]:hover{transform:scale(1.05)}
+
+/* absent vs note */
+[role="button"] > div[aria-hidden]:empty{opacity:.3}
+[role="button"] > div[aria-hidden]:not(:empty){color:var(--accent)}
+[role="button"] > div[aria-hidden]:not(:empty){color:var(--accent)}
+
+/* absent icon color override (can't target text content with pure CSS reliably) */
+[role="button"] > div[aria-hidden] { color:var(--muted) }
+
+/* Dialog (modal) */
+[role="dialog"]{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:60}
+[role="dialog"] > div:first-child{position:absolute;inset:0;background:rgba(0,0,0,0.28)}
+[role="dialog"] > div:nth-child(2){position:relative;background:var(--card);border-radius:8px;padding:14px;width:340px;box-shadow:0 10px 30px rgba(2,6,23,0.12)}
+
+/* utility classes (kept for components that may use them) */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:50}
 .modal{position:relative;background:#fff;border-radius:6px;padding:12px;z-index:60;box-shadow:0 6px 24px rgba(0,0,0,0.2)}
-.cell-btn{background:transparent;border:none;cursor:pointer;font-size:16px}
-.cell-btn:focus{outline:3px solid rgba(3,102,214,0.2);outline-offset:2px}
+
 
