@@ -1,6 +1,8 @@
 export type Employee = {
   id: string
   name: string
+  /** monthly salary in your currency (optional). If absent or 0, salary calc is skipped */
+  monthlySalary?: number
 }
 
 export type EmployeeCategory = {

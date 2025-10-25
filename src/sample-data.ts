@@ -27,7 +27,7 @@ export const sampleData: EmployeeCategory[] = [
     id: 'home',
     name: 'Home',
     employees: [
-      { id: 'h1', name: 'Pallavi' }
+      { id: 'h1', name: 'Pallavi', monthlySalary: 16000 }
     ]
   }
 ]

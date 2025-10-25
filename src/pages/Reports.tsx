@@ -45,7 +45,22 @@ export default function Reports(){
   }, [])
 
   // flatten employee list
-  const employees = useMemo(()=> categories.flatMap(c=>c.employees), [categories])
+  // Build a map of sample employees (id -> employee) so we can fill missing fields
+  const sampleEmpMap = useMemo(()=>{
+    const m: Record<string, {monthlySalary?: number}> = {}
+    for(const c of sampleData){
+      for(const e of c.employees){
+        m[e.id] = { monthlySalary: (e as any).monthlySalary }
+      }
+    }
+    return m
+  }, [])
+
+  const employees = useMemo(()=> categories.flatMap(c=>c.employees).map(emp=>({
+    ...emp,
+    // if stored employee lacks monthlySalary, fall back to sample data value (if any)
+    monthlySalary: (emp as any).monthlySalary ?? sampleEmpMap[emp.id]?.monthlySalary
+  })), [categories, sampleEmpMap])
 
   // counts per employee per month (only count absences)
   const counts = useMemo(()=>{
@@ -62,8 +77,34 @@ export default function Reports(){
     return map
   }, [employees, leaves])
 
+  
+
   // month navigation state (YYYY-MM)
   const [monthKey, setMonthKey] = useState<string>(currentMonthKey())
+
+  // for the selected month, list the absent dates per employee (day numbers)
+  const absentsByEmployee = useMemo(()=>{
+    const map: Record<string, string[]> = {}
+    for(const emp of employees) map[emp.id] = []
+    for(const l of leaves){
+      if(!l || !l.dateISO) continue
+      if(!l.absent) continue
+      const month = l.dateISO.slice(0,7)
+      if(month !== monthKey) continue
+      if(!map[l.employeeId]) continue
+      // parse ISO yyyy-mm-dd deterministically to avoid timezone shifts
+      // new Date('yyyy-mm-dd') can produce a Date at UTC midnight which when
+      // converted to local time may become the previous day in some zones.
+      const dayNum = Number(l.dateISO.slice(8,10))
+      map[l.employeeId].push(String(dayNum))
+    }
+    // sort day numbers ascending and remove duplicates
+    for(const id of Object.keys(map)){
+      const unique = Array.from(new Set(map[id].map(x=>Number(x)).sort((a,b)=>a-b)))
+      map[id] = unique.map(n=>String(n))
+    }
+    return map
+  }, [employees, leaves, monthKey])
 
   return (
     <div>
@@ -82,6 +123,8 @@ export default function Reports(){
             <tr>
               <th style={{textAlign:'left', padding:8}}>Employee</th>
               <th style={{padding:8, textAlign:'center'}}>{monthLabel(monthKey)}</th>
+              <th style={{textAlign:'left', padding:8}}>Absent dates</th>
+              <th style={{textAlign:'right', padding:8}}>Salary (calc)</th>
             </tr>
           </thead>
           <tbody>
@@ -89,6 +132,20 @@ export default function Reports(){
               <tr key={emp.id} style={{borderTop:'1px solid rgba(15,23,42,0.04)'}}>
                 <td style={{padding:8}}>{emp.name}</td>
                 <td style={{padding:8, textAlign:'center'}}>{counts[emp.id]?.[monthKey] || 0}</td>
+                <td style={{padding:8}} title={absentsByEmployee[emp.id]?.length ? absentsByEmployee[emp.id].map(d=>`${monthKey}-${d.padStart(2,'0')}`).join(', ') : ''}>
+                  {absentsByEmployee[emp.id] && absentsByEmployee[emp.id].length ? absentsByEmployee[emp.id].join(', ') : '—'}
+                </td>
+                <td style={{padding:8, textAlign:'right'}}>
+                  {emp.monthlySalary ? (
+                    (()=>{
+                      const absentDays = absentsByEmployee[emp.id]?.length || 0
+                      const monthly = emp.monthlySalary || 0
+                      const deduction = absentDays * (monthly / 30)
+                      const calc = monthly - deduction
+                      return calc.toFixed(2)
+                    })()
+                  ) : '—'}
+                </td>
               </tr>
             ))}
           </tbody>
