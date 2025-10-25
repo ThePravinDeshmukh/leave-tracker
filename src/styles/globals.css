@@ -44,7 +44,7 @@ textarea{font-family:inherit;border:1px solid #e6e7ea;border-radius:6px}
 .collapsible > .collapsible-content{padding:8px}
 
 /* Week grid cells (role=button used for cells) */
-[role="button"]{border:1px dashed rgba(15,23,42,0.06);min-height:36px;padding:6px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:transparent;transition:background .12s,box-shadow .12s}
+[role="button"]{border:1px dashed rgba(15,23,42,0.06);min-height:36px;min-width:30px;padding:6px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:transparent;transition:background .12s,box-shadow .12s}
 [role="button"]:hover{background:rgba(2,6,23,0.02)}
 [role="button"]:focus{box-shadow:0 0 0 4px rgba(3,102,214,0.08);outline:none}
 [role="button"] > div{font-size:16px}

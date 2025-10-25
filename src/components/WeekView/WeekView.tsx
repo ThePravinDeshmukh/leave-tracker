@@ -56,38 +56,42 @@ export default function WeekView({data}: Props){
         <div style={{marginLeft:12}}>{formatShort(days[0].date)} - {formatShort(days[5].date)}</div>
       </div>
 
-      <div style={{display:'grid', gridTemplateColumns:'250px 1fr'}}>
+  <div style={{display:'grid', gridTemplateColumns:`100px repeat(${days.length}, minmax(30px, 1fr))`, gap:4, alignItems:'center', marginBottom:8}}>
         <div />
-        <div style={{display:'grid', gridTemplateColumns:`repeat(${days.length}, 1fr)`, gap:4}}>
-          {days.map(d=> <div key={d.iso} style={{textAlign:'center', fontWeight:600}}>{d.date.toLocaleDateString(undefined,{weekday:'short', day:'numeric'})}</div>)}
-        </div>
+        {days.map(d=>{
+          const shortWeek = d.date.toLocaleDateString(undefined, {weekday: 'short'})
+          const dayNum = d.date.getDate()
+          return (
+            <div key={d.iso} style={{textAlign:'center', fontWeight:600}} title={`${shortWeek} ${dayNum}`}>
+              {String(shortWeek).charAt(0)}
+            </div>
+          )
+        })}
       </div>
 
       {data.map(cat=> (
         <Collapsible key={cat.id} title={cat.name} defaultOpen>
           <div>
             {cat.employees.map(emp=> (
-              <div key={emp.id} style={{display:'grid', gridTemplateColumns:'250px 1fr', alignItems:'center', marginBottom:4}}>
-                <div style={{padding:6}}>{emp.name}</div>
-                <div style={{display:'grid', gridTemplateColumns:`repeat(${days.length}, 1fr)`, gap:4}}>
-                  {days.map(d=>{
-                    const l = leaves.find(x=>x.employeeId===emp.id && x.dateISO===d.iso)
-                    return (
-                      <WeekDayCell
-                        key={d.iso}
-                        dateISO={d.iso}
-                        leave={l}
-                        onSave={(leaveOrNull: Leave | null)=>{
-                          if(leaveOrNull === null){
-                            removeLeave(emp.id, d.iso)
-                          }else{
-                            saveLeave({...leaveOrNull, employeeId: emp.id})
-                          }
-                        }}
-                      />
-                    )
-                  })}
-                </div>
+              <div key={emp.id} style={{display:'grid', gridTemplateColumns:`100px repeat(${days.length}, minmax(30px, 1fr))`, alignItems:'center', gap:4, marginBottom:4}}>
+                <div style={{padding:6, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>{emp.name}</div>
+                {days.map(d=>{
+                  const l = leaves.find(x=>x.employeeId===emp.id && x.dateISO===d.iso)
+                  return (
+                    <WeekDayCell
+                      key={d.iso}
+                      dateISO={d.iso}
+                      leave={l}
+                      onSave={(leaveOrNull: Leave | null)=>{
+                        if(leaveOrNull === null){
+                          removeLeave(emp.id, d.iso)
+                        }else{
+                          saveLeave({...leaveOrNull, employeeId: emp.id})
+                        }
+                      }}
+                    />
+                  )
+                })}
               </div>
             ))}
           </div>
