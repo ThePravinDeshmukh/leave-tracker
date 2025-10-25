@@ -30,8 +30,8 @@ export default function WeekDayCell({dateISO, leave, onSave}:{dateISO:string, le
   }
 
   function handleClearNote(){
-    // save a leave with empty note (present)
-    onSave({dateISO, note: '', absent: false} as Leave)
+    // clear both leave and note by removing the leave entry entirely
+    onSave(null)
     setOpen(false)
   }
 
@@ -87,9 +87,8 @@ export default function WeekDayCell({dateISO, leave, onSave}:{dateISO:string, le
 
             <div style={{display:'flex', gap:8, justifyContent:'flex-end', marginTop:10}}>
               <button onClick={()=>handleSave(true)} aria-label="Mark absent">✖ Absent</button>
-              <button onClick={()=>handleSave(false)} aria-label="Save note">📝 Save</button>
-              {note && <button onClick={handleClearNote} aria-label="Clear note">Clear note</button>}
-              {leave && <button onClick={handleRemove} aria-label="Remove leave">Remove</button>}
+              <button onClick={()=>handleSave(false)} aria-label="Save note" disabled={!note.trim()}>📝 Save</button>
+              {(leave || note) && <button onClick={()=>{ onSave(null); setOpen(false) }} aria-label="Clear leave and note">Clear</button>}
               <button onClick={()=>setOpen(false)} aria-label="Cancel">Cancel</button>
             </div>
           </div>
