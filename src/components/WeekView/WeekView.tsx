@@ -63,7 +63,7 @@ export default function WeekView({data}: Props){
           const dayNum = d.date.getDate()
           return (
             <div key={d.iso} style={{textAlign:'center', fontWeight:600}} title={`${shortWeek} ${dayNum}`}>
-              {String(shortWeek).charAt(0)}
+              {String(shortWeek).charAt(0)}/{dayNum}
             </div>
           )
         })}
